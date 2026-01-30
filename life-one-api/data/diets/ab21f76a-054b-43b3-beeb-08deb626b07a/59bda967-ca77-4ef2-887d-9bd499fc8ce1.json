@@ -1,0 +1,17 @@
+{
+  "id": "59bda967-ca77-4ef2-887d-9bd499fc8ce1",
+  "name": "New diet",
+  "sections": [
+    {
+      "id": "2625b297-55f8-4711-9378-5b8ce1c58dd2",
+      "name": "breakfeast",
+      "description": "",
+      "days": [
+        "Mon"
+      ],
+      "foodNames": [
+        "chicken"
+      ]
+    }
+  ]
+}

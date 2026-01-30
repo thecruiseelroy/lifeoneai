@@ -1,0 +1,15 @@
+{
+  "id": "c598dc61-0f41-4093-b000-58d3fabfe65d",
+  "name": "New program",
+  "sections": [
+    {
+      "id": "e0b4b588-da8c-46f4-bd2b-f49444f4c887",
+      "name": "Power lifting",
+      "description": "",
+      "days": [],
+      "exerciseNames": [
+        "3/4 Sit-Up"
+      ]
+    }
+  ]
+}

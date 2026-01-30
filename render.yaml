@@ -1,0 +1,15 @@
+# Render Blueprint at repo root for monorepo (Life One = life-one-app + life-one-api).
+# Deploys the API from the life-one-api subdirectory.
+# Set CORS_ORIGINS in Render dashboard: https://lifeoneai.com,https://www.lifeoneai.com
+services:
+  - type: web
+    name: life-one-api
+    runtime: python
+    rootDir: life-one-api
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: CORS_ORIGINS
+        sync: false
+        # Set in Render dashboard: https://lifeoneai.com,https://www.lifeoneai.com

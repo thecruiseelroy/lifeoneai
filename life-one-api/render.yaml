@@ -1,0 +1,12 @@
+# Render Blueprint: deploy Life One API as a web service.
+# Set CORS_ORIGINS in Render dashboard: https://lifeoneai.com,https://www.lifeoneai.com
+services:
+  - type: web
+    name: life-one-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: CORS_ORIGINS
+        sync: false
+        # Set in Render dashboard: https://lifeoneai.com,https://www.lifeoneai.com

@@ -1,0 +1,26 @@
+name: Automatic Minification
+
+on:
+  push:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  minify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: git config user.name github-actions
+      - run: git config user.email github-actions@github.com
+      - run: python3 minify.py
+      - run: mv minified-exercises.json /tmp
+      - run: git checkout minified
+      - run: mv /tmp/minified-exercises.json .
+      - run: git add minified-exercises.json
+      - run: git commit -m "Minified new exercises.json"
+      - run: git push
