@@ -147,11 +147,12 @@ def me(current: tuple[str, str] = Depends(get_current_profile)):
 
 
 def require_profile_match(
-    profile_name: str,
+    profile_name: str,  # from path; not used for auth (authorize by JWT profile_id only)
     current: tuple[str, str] = Depends(get_current_profile),
 ) -> str:
-    """Dependency: require current user; return profile_id. Resolve by JWT profile_id so URL name and DB name can differ."""
+    """Dependency: require current user; return profile_id. Authorize by JWT profile_id only; URL profile_name is ignored (no 403 on name mismatch)."""
     profile_id, _name = current
+    print(f"[auth] require_profile_match: profile_id={profile_id[:8]}... path_profile_name={profile_name[:20] if profile_name else ''}...")
     conn = get_connection()
     try:
         row = conn.execute(
