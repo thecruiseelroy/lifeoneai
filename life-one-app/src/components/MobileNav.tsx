@@ -1,29 +1,11 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
-
-const NAV_LINKS = [
-  { to: '/', label: 'Dashboard' },
-  { to: '/library', label: 'Library' },
-  { to: '/programs', label: 'Programs' },
-  { to: '/foods', label: 'Foods' },
-  { to: '/diets', label: 'Diets' },
-  { to: '/meals', label: 'Meals' },
-  { to: '/profile', label: 'Profile' },
-  { to: '/settings', label: 'Settings' },
-] as const
+import { NAV_CONFIG, isNavLinkActive } from '../config/navConfig'
 
 export function MobileNav() {
   const [open, setOpen] = useState(false)
   const location = useLocation()
-
-  const isActive = (to: string) => {
-    if (to === '/') return location.pathname === '/'
-    if (to === '/library') return location.pathname === '/library' || location.pathname.startsWith('/exercise')
-    if (to === '/programs') return location.pathname.startsWith('/programs')
-    if (to === '/diets') return location.pathname.startsWith('/diets')
-    return location.pathname === to
-  }
 
   return (
     <>
@@ -60,16 +42,39 @@ export function MobileNav() {
             </button>
           </div>
           <div className="mobile-nav-links">
-            {NAV_LINKS.map(({ to, label }) => (
-              <Link
-                key={to}
-                to={to}
-                className={`mobile-nav-link ${isActive(to) ? 'active' : ''}`}
-                onClick={() => setOpen(false)}
-              >
-                {label}
-              </Link>
-            ))}
+            {NAV_CONFIG.map((entry) => {
+              if (entry.type === 'link') {
+                const active = isNavLinkActive(entry.to, location.pathname)
+                return (
+                  <Link
+                    key={entry.to}
+                    to={entry.to}
+                    className={`mobile-nav-link ${active ? 'active' : ''}`}
+                    onClick={() => setOpen(false)}
+                  >
+                    {entry.label}
+                  </Link>
+                )
+              }
+              return (
+                <div key={entry.id} className="mobile-nav-section">
+                  <div className="mobile-nav-section-title">{entry.label}</div>
+                  {entry.items.map((item) => {
+                    const active = isNavLinkActive(item.to, location.pathname)
+                    return (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        className={`mobile-nav-link mobile-nav-link-in-group ${active ? 'active' : ''}`}
+                        onClick={() => setOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              )
+            })}
           </div>
         </nav>
       </div>

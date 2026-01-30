@@ -150,19 +150,15 @@ def require_profile_match(
     profile_name: str,
     current: tuple[str, str] = Depends(get_current_profile),
 ) -> str:
-    """Dependency: require path profile_name to be the current user; return profile_id."""
-    profile_id, name = current
-    if profile_name.strip() != name:
-        raise HTTPException(status_code=403, detail="Forbidden")
+    """Dependency: require current user; return profile_id. Resolve by JWT profile_id so URL name and DB name can differ."""
+    profile_id, _name = current
     conn = get_connection()
     try:
         row = conn.execute(
-            "SELECT id FROM profiles WHERE name = ?", (profile_name.strip(),)
+            "SELECT id FROM profiles WHERE id = ?", (profile_id,)
         ).fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Profile not found")
-        if row["id"] != profile_id:
-            raise HTTPException(status_code=403, detail="Forbidden")
         return row["id"]
     finally:
         conn.close()

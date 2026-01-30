@@ -1,4 +1,4 @@
-import { Routes, Route, Link, useLocation } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import { DashboardPage } from './features/dashboard/DashboardPage'
 import { LibraryPage } from './features/library/LibraryPage'
@@ -16,14 +16,11 @@ import { ProfilePage } from './features/profile/ProfilePage'
 import { SettingsPage } from './features/settings/SettingsPage'
 import { LoginPage } from './features/auth/LoginPage'
 import { MobileNav } from './components/MobileNav'
+import { DesktopNav } from './components/DesktopNav'
 import { Dumbbell } from 'lucide-react'
 
 function App() {
   const { user, loading } = useAuth()
-  const location = useLocation()
-  const isDashboard = location.pathname === '/'
-  const isLibrary =
-    location.pathname === '/library' || location.pathname.startsWith('/exercise')
 
   if (!loading && !user) {
     return <LoginPage />
@@ -38,56 +35,7 @@ function App() {
             <h1>Life ONE</h1>
           </Link>
           <MobileNav />
-          <nav className="app-bar-nav">
-            <Link
-              to="/"
-              className={`app-bar-link ${isDashboard ? 'active' : ''}`}
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/library"
-              className={`app-bar-link ${isLibrary ? 'active' : ''}`}
-            >
-              Library
-            </Link>
-            <Link
-              to="/programs"
-              className={`app-bar-link ${location.pathname.startsWith('/programs') ? 'active' : ''}`}
-            >
-              Programs
-            </Link>
-            <Link
-              to="/foods"
-              className={`app-bar-link ${location.pathname === '/foods' ? 'active' : ''}`}
-            >
-              Foods
-            </Link>
-            <Link
-              to="/diets"
-              className={`app-bar-link ${location.pathname.startsWith('/diets') ? 'active' : ''}`}
-            >
-              Diets
-            </Link>
-            <Link
-              to="/meals"
-              className={`app-bar-link ${location.pathname === '/meals' ? 'active' : ''}`}
-            >
-              Meals
-            </Link>
-            <Link
-              to="/profile"
-              className={`app-bar-link ${location.pathname === '/profile' ? 'active' : ''}`}
-            >
-              Profile
-            </Link>
-            <Link
-              to="/settings"
-              className={`app-bar-link ${location.pathname === '/settings' ? 'active' : ''}`}
-            >
-              Settings
-            </Link>
-          </nav>
+          <DesktopNav />
           <ProfileSelector />
         </div>
       </header>
