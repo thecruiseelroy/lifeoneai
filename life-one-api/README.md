@@ -57,6 +57,10 @@ CORS_ORIGINS=https://lifeoneai.com,https://www.lifeoneai.com
 - **Railway / Heroku:** Use the **Procfile** (`web: uvicorn main:app --host 0.0.0.0 --port $PORT`). Set `CORS_ORIGINS` in the service env.
 - **Docker:** `Dockerfile` is included. Build and run with `CORS_ORIGINS` passed as an env var.
 
+## Environment (optional)
+
+- **OPENROUTER_ADMIN_API_KEY** — Master default OpenRouter API key. Used when a user hasn’t set their own in Settings (AI / OpenRouter). Set this on the server (e.g. Render dashboard) so the coach works out of the box; users can still override with their own key in the app. Never commit keys to the repo.
+
 ## Database
 
 SQLite file: `life_one.db` in the API directory (override with env `LIFE_ONE_DB`).  

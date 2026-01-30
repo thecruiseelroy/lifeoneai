@@ -20,8 +20,9 @@ DEBUG_LOG = str(Path(__file__).resolve().parent.parent.parent / ".cursor" / "deb
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 CHAT_HISTORY_LIMIT = 20
 
-# Hardcoded fallback so coach always works even if profile has no key saved
-OPENROUTER_API_KEY_FALLBACK = "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"
+# Master default key (optional): used when user hasn't set their own in Settings.
+# Set OPENROUTER_ADMIN_API_KEY on the server (e.g. Render env); never commit keys.
+OPENROUTER_ADMIN_API_KEY = (__import__("os").environ.get("OPENROUTER_ADMIN_API_KEY") or "").strip() or None
 
 
 def _get_ai_settings_with_key(profile_id: str) -> dict:
@@ -32,7 +33,7 @@ def _get_ai_settings_with_key(profile_id: str) -> dict:
             (profile_id,),
         ).fetchone()
         db_key = (row["openrouter_api_key"] or "").strip() if row else ""
-        api_key = db_key if db_key else OPENROUTER_API_KEY_FALLBACK
+        api_key = db_key if db_key else OPENROUTER_ADMIN_API_KEY
         return {
             "api_key": api_key,
             "model": (row["openrouter_model"] or "openai/gpt-4o").strip() if row else "openai/gpt-4o",
@@ -207,6 +208,11 @@ def post_chat_message(profile_name: str, body: dict, profile_id: str = Depends(r
     if not message:
         raise HTTPException(status_code=400, detail="message is required")
     settings = _get_ai_settings_with_key(profile_id)
+    if not settings.get("api_key"):
+        raise HTTPException(
+            status_code=400,
+            detail="No OpenRouter API key. Set one in Settings (AI / OpenRouter), or the server admin can set OPENROUTER_ADMIN_API_KEY.",
+        )
     context = build_context_dict(profile_id)
     system_prompt = _build_system_prompt(context, profile_id)
     conn = get_connection()
