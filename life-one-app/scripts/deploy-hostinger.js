@@ -38,6 +38,11 @@ try {
   console.log('Done. Site updated.')
 } catch (err) {
   console.error('Deploy failed:', err.message)
+  if (/Hostname\/IP does not match certificate|altnames/.test(err.message)) {
+    console.error('')
+    console.error('Fix: In B:\\Life One\\deploy-env.bat set FTP_HOST to the hostname (e.g. ftp.lifeoneai.com), not the IP.')
+    console.error('See DEPLOY-HOSTINGER.md.')
+  }
   process.exit(1)
 } finally {
   client.close()
