@@ -20,7 +20,7 @@ export function SettingsPage() {
   const loadSettings = useCallback(async () => {
     if (!profileName) return
     setError(null)
-    const url = `${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/settings/ai`
+    const url = `${API_BASE}/api/profiles/me/settings/ai`
     // #region agent log
     fetch('http://127.0.0.1:7261/ingest/984f0a71-c4bc-4ea1-9635-399e837fff0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SettingsPage.tsx:loadSettings:beforeFetch',message:'GET settings/ai',data:{url,profileName,API_BASE},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1_H2_H5'})}).catch(()=>{});
     // #endregion
@@ -73,12 +73,12 @@ export function SettingsPage() {
       fetch('http://127.0.0.1:7261/ingest/984f0a71-c4bc-4ea1-9635-399e837fff0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SettingsPage.tsx:handleSave',message:'PUT ai settings',data:{profileName,bodyHasApiKey:'openrouter_api_key' in body,bodyKeys:Object.keys(body)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
       // #endregion
       const res = await fetch(
-        `${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/settings/ai`,
+        `${API_BASE}/api/profiles/me/settings/ai`,
         { method: 'PUT', headers: { 'Content-Type': 'application/json', ...getAuthHeaders() }, body: JSON.stringify(body) }
       )
       if (!res.ok) throw new Error(await res.text())
       setOpenrouterApiKey('')
-      setMessage('Saved.')
+      setMessage(profileName ? `Saved. Settings apply to profile “${profileName}”.` : 'Saved.')
       setHasApiKey(true)
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to save'

@@ -8,10 +8,13 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException
 
 from database import get_connection
-from routers.auth import require_profile_match
+from routers.auth import get_current_profile, require_profile_match
 
 router = APIRouter(tags=["ai_settings"])
 DEBUG_LOG = str(Path(__file__).resolve().parent.parent.parent / ".cursor" / "debug.log")
+
+# Fixed path for "current user" — no profile name in URL; uses JWT only.
+AI_SETTINGS_ME = "/api/profiles/me/settings/ai"
 
 
 def _ai_settings_response(profile_id: str) -> dict:
@@ -42,20 +45,29 @@ def _ai_settings_response(profile_id: str) -> dict:
         conn.close()
 
 
-@router.get("/api/profiles/{profile_name}/settings/ai")
-def get_ai_settings(profile_name: str, profile_id: str = Depends(require_profile_match)):
+@router.get(AI_SETTINGS_ME)
+def get_ai_settings_me(current: tuple[str, str] = Depends(get_current_profile)):
+    """Current user's AI settings. No profile name in URL — one URL for whoever is logged in."""
+    profile_id, _ = current
     return _ai_settings_response(profile_id)
 
 
-@router.put("/api/profiles/{profile_name}/settings/ai")
-def put_ai_settings(profile_name: str, body: dict, profile_id: str = Depends(require_profile_match)):
+@router.put(AI_SETTINGS_ME)
+def put_ai_settings_me(body: dict, current: tuple[str, str] = Depends(get_current_profile)):
+    """Update current user's AI settings. No profile name in URL."""
+    profile_id, _ = current
+    return _put_ai_settings_impl(profile_id, body)
+
+
+def _put_ai_settings_impl(profile_id: str, body: dict) -> dict:
+    """Shared PUT logic; used by me and by legacy profile_name route."""
     api_key = body.get("openrouter_api_key")
     if api_key is not None:
         api_key = (api_key or "").strip() or None
     # #region agent log
     try:
         with open(DEBUG_LOG, "a", encoding="utf-8") as f:
-            f.write(json.dumps({"location": "ai_settings.py:put_ai_settings", "message": "PUT received", "data": {"profile_name": profile_name, "profile_id": profile_id, "body_has_api_key": "openrouter_api_key" in body, "api_key_present_after_strip": api_key is not None}, "hypothesisId": "B"}) + "\n")
+            f.write(json.dumps({"location": "ai_settings.py:put_ai_settings", "message": "PUT received", "data": {"profile_id": profile_id, "body_has_api_key": "openrouter_api_key" in body, "api_key_present_after_strip": api_key is not None}, "hypothesisId": "B"}) + "\n")
     except Exception:
         pass
     # #endregion
@@ -102,3 +114,13 @@ def put_ai_settings(profile_name: str, body: dict, profile_id: str = Depends(req
         return _ai_settings_response(profile_id)
     finally:
         conn.close()
+
+
+@router.get("/api/profiles/{profile_name}/settings/ai")
+def get_ai_settings(profile_name: str, profile_id: str = Depends(require_profile_match)):
+    return _ai_settings_response(profile_id)
+
+
+@router.put("/api/profiles/{profile_name}/settings/ai")
+def put_ai_settings(profile_name: str, body: dict, profile_id: str = Depends(require_profile_match)):
+    return _put_ai_settings_impl(profile_id, body)
