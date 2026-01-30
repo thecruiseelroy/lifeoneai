@@ -25,13 +25,18 @@ if (!host || !user || !password) {
 
 const client = new Client(60_000)
 
+const useSecure = process.env.FTP_SECURE !== 'false'
+// Hostinger FTP uses a shared cert (*.hstgr.io), so hostname verification fails for ftp.yourdomain.com
+const secureOptions = useSecure ? { rejectUnauthorized: false } : undefined
+
 try {
   console.log('Connecting to', host, '...')
   await client.access({
     host,
     user,
     password,
-    secure: process.env.FTP_SECURE !== 'false',
+    secure: useSecure,
+    ...(secureOptions && { secureOptions }),
   })
   console.log('Uploading dist to', remoteDir, '...')
   await client.uploadFromDir(localDir, remoteDir)
@@ -40,8 +45,7 @@ try {
   console.error('Deploy failed:', err.message)
   if (/Hostname\/IP does not match certificate|altnames/.test(err.message)) {
     console.error('')
-    console.error('Fix: In B:\\Life One\\deploy-env.bat set FTP_HOST to the hostname (e.g. ftp.lifeoneai.com), not the IP.')
-    console.error('See DEPLOY-HOSTINGER.md.')
+    console.error('Hostinger FTP uses a shared cert (*.hstgr.io). This script should use secureOptions to allow it; if you still see this, check DEPLOY-HOSTINGER.md.')
   }
   process.exit(1)
 } finally {
