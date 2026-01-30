@@ -14,8 +14,8 @@ router = APIRouter(tags=["ai_settings"])
 DEBUG_LOG = str(Path(__file__).resolve().parent.parent.parent / ".cursor" / "debug.log")
 
 
-@router.get("/api/profiles/{profile_name}/settings/ai")
-def get_ai_settings(profile_name: str, profile_id: str = Depends(require_profile_match)):
+def _ai_settings_response(profile_id: str) -> dict:
+    """Build the GET/PUT response dict for AI settings. Uses profile_id only (no request deps)."""
     conn = get_connection()
     try:
         row = conn.execute(
@@ -40,6 +40,11 @@ def get_ai_settings(profile_name: str, profile_id: str = Depends(require_profile
         }
     finally:
         conn.close()
+
+
+@router.get("/api/profiles/{profile_name}/settings/ai")
+def get_ai_settings(profile_name: str, profile_id: str = Depends(require_profile_match)):
+    return _ai_settings_response(profile_id)
 
 
 @router.put("/api/profiles/{profile_name}/settings/ai")
@@ -94,6 +99,6 @@ def put_ai_settings(profile_name: str, body: dict, profile_id: str = Depends(req
         except Exception:
             pass
         # #endregion
-        return get_ai_settings(profile_name)
+        return _ai_settings_response(profile_id)
     finally:
         conn.close()

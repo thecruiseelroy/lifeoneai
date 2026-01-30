@@ -24,7 +24,9 @@ export function PageLayout({
         backLink={backLink}
         actions={actions}
       />
-      <main className="page-layout-main">{children}</main>
+      <div className="page-layout-inner">
+        <main className="page-layout-main">{children}</main>
+      </div>
     </div>
   )
 }
