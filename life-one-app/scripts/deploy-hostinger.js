@@ -38,8 +38,17 @@ try {
     secure: useSecure,
     ...(secureOptions && { secureOptions }),
   })
-  console.log('Uploading dist contents into', remoteDir, '...')
-  await client.ensureDir(remoteDir)
+  const cwd = await client.pwd()
+  const normalizedCwd = cwd.replace(/\\/g, '/').replace(/\/+$/, '')
+  const lastSegment = normalizedCwd.split('/').filter(Boolean).pop() || ''
+  const alreadyInTarget = lastSegment === remoteDir
+  if (!alreadyInTarget) {
+    console.log('Changing to', remoteDir, '... (cwd was:', cwd + ')')
+    await client.ensureDir(remoteDir)
+  } else {
+    console.log('Already in', remoteDir, '— uploading dist contents here.')
+  }
+  console.log('Uploading dist contents (index.html, assets/, ...) into current directory...')
   await client.uploadFromDir(localDir)
   console.log('Done. Site updated.')
 } catch (err) {

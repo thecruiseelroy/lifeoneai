@@ -14,16 +14,31 @@ import { MealsPage } from './features/meals/MealsPage'
 import { ProfileSelector } from './features/profile/ProfileSelector'
 import { ProfilePage } from './features/profile/ProfilePage'
 import { SettingsPage } from './features/settings/SettingsPage'
-import { LoginPage } from './features/auth/LoginPage'
 import { MobileNav } from './components/MobileNav'
 import { DesktopNav } from './components/DesktopNav'
 import { Dumbbell } from 'lucide-react'
+import { MarketingLayout } from './features/landing/MarketingLayout'
+import { HomePage } from './features/landing/HomePage'
+import { FeaturesPage } from './features/landing/FeaturesPage'
+import { HowItWorksPage } from './features/landing/HowItWorksPage'
+import { WhyPage } from './features/landing/WhyPage'
+import { GetStartedPage } from './features/landing/GetStartedPage'
 
 function App() {
   const { user, loading } = useAuth()
 
   if (!loading && !user) {
-    return <LoginPage />
+    return (
+      <Routes>
+        <Route element={<MarketingLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/how-it-works" element={<HowItWorksPage />} />
+          <Route path="/why" element={<WhyPage />} />
+          <Route path="/get-started" element={<GetStartedPage />} />
+        </Route>
+      </Routes>
+    )
   }
 
   return (
