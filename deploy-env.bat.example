@@ -1,0 +1,11 @@
+@echo off
+REM Copy this file to deploy-env.bat and fill in your Hostinger FTP details.
+REM See DEPLOY-HOSTINGER.md for how to get these from Hostinger hPanel.
+REM deploy-env.bat is in .gitignore - do not commit it (contains password).
+
+REM Use IP or hostname only (no ftp://) - script strips ftp:// if you paste it
+set FTP_HOST=31.170.160.139
+set FTP_USER=your_ftp_username
+set FTP_PASSWORD=your_ftp_password
+REM Optional: remote folder (default is public_html)
+REM set FTP_REMOTE_DIR=public_html

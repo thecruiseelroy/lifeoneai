@@ -45,7 +45,7 @@ function FoodTile({
   )
 }
 
-function FoodDetailPanel({
+function FoodDetailModal({
   food,
   onClose,
 }: {
@@ -58,10 +58,23 @@ function FoodDetailPanel({
   const nutrientEntries = Object.entries(nutrients).slice(0, 24)
 
   return (
-    <aside className="foods-detail-panel" aria-label="Food details">
-      <div className="foods-detail-panel-inner">
+    <div
+      className="program-modal-overlay food-detail-modal-overlay"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        className="program-modal food-detail-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-labelledby="food-detail-modal-title"
+        aria-modal="true"
+        aria-label="Food details"
+      >
         <div className="foods-detail-panel-header">
-          <h2 className="foods-detail-panel-title">{food.name}</h2>
+          <h2 id="food-detail-modal-title" className="foods-detail-panel-title">
+            {food.name}
+          </h2>
           <button
             type="button"
             className="foods-detail-panel-close"
@@ -99,7 +112,7 @@ function FoodDetailPanel({
           )}
         </div>
       </div>
-    </aside>
+    </div>
   )
 }
 
@@ -131,6 +144,15 @@ export function FoodsLibraryPage() {
     setDetailFood(null)
   }, [])
 
+  useEffect(() => {
+    if (!detailFood) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleCloseDetail()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [detailFood, handleCloseDetail])
+
   const handleLoadMore = useCallback(() => {
     setLimit((prev) => prev + PAGE_SIZE)
   }, [])
@@ -154,7 +176,7 @@ export function FoodsLibraryPage() {
       }
     >
       <div className="programs-canvas-layout foods-library-layout">
-        <main className={`programs-canvas-main foods-library-main ${detailFood ? 'foods-library-has-detail' : ''}`}>
+        <main className="programs-canvas-main foods-library-main">
           <div className="foods-library-toolbar">
             <div className="search-bar foods-library-search">
               <Search size={20} className="search-bar-icon" aria-hidden />
@@ -234,17 +256,10 @@ export function FoodsLibraryPage() {
           )}
         </main>
         {detailFood && (
-          <>
-            <div
-              className="foods-detail-backdrop"
-              onClick={handleCloseDetail}
-              onKeyDown={(e) => e.key === 'Escape' && handleCloseDetail()}
-              role="button"
-              tabIndex={-1}
-              aria-label="Close detail"
-            />
-            <FoodDetailPanel food={detailFood} onClose={handleCloseDetail} />
-          </>
+          <FoodDetailModal
+            food={detailFood}
+            onClose={handleCloseDetail}
+          />
         )}
       </div>
     </PageLayout>

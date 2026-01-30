@@ -2,7 +2,7 @@ import { useProfile } from '../../context/ProfileContext'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { getBreadcrumbItems } from '../../utils/breadcrumbRoutes'
 import { useState, useEffect, useCallback } from 'react'
-import { getApiBase, getAuthHeaders } from '../../api/client'
+import { getApiBase, getAuthHeaders, checkAuthResponse } from '../../api/client'
 
 const API_BASE = getApiBase()
 
@@ -26,6 +26,7 @@ export function SettingsPage() {
     // #endregion
     try {
       const res = await fetch(url, { headers: getAuthHeaders() })
+      checkAuthResponse(res)
       // #region agent log
       fetch('http://127.0.0.1:7261/ingest/984f0a71-c4bc-4ea1-9635-399e837fff0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SettingsPage.tsx:loadSettings:afterFetch',message:'response',data:{status:res.status,ok:res.ok,statusText:res.statusText},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1_H2_H3'})}).catch(()=>{});
       // #endregion
@@ -76,6 +77,7 @@ export function SettingsPage() {
         `${API_BASE}/api/profiles/me/settings/ai`,
         { method: 'PUT', headers: { 'Content-Type': 'application/json', ...getAuthHeaders() }, body: JSON.stringify(body) }
       )
+      checkAuthResponse(res)
       if (!res.ok) throw new Error(await res.text())
       setOpenrouterApiKey('')
       setMessage(profileName ? `Saved. Settings apply to profile “${profileName}”.` : 'Saved.')

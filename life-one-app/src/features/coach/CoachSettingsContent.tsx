@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { getApiBase, getAuthHeaders } from '../../api/client'
+import { getApiBase, getAuthHeaders, checkAuthResponse } from '../../api/client'
 import {
   User,
   Target,
@@ -75,6 +75,10 @@ export function CoachSettingsContent({ profileName }: CoachSettingsContentProps)
         fetch(`${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/coach/personas`, { headers }),
         fetch(`${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/coach/files`, { headers }),
       ])
+      checkAuthResponse(presetsRes)
+      checkAuthResponse(settingsRes)
+      checkAuthResponse(personasRes)
+      checkAuthResponse(filesRes)
       if (presetsRes.ok) {
         const d = await presetsRes.json()
         setPresets(d.presets ?? [])
@@ -117,6 +121,7 @@ export function CoachSettingsContent({ profileName }: CoachSettingsContentProps)
           `${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/coach/settings`,
           { method: 'PUT', headers: { 'Content-Type': 'application/json', ...getAuthHeaders() }, body: JSON.stringify(body) }
         )
+        checkAuthResponse(res)
         if (res.ok) {
           const d = await res.json()
           setSettings((prev) => (prev ? { ...prev, ...d } : null))
@@ -146,6 +151,7 @@ export function CoachSettingsContent({ profileName }: CoachSettingsContentProps)
           }),
         }
       )
+      checkAuthResponse(res)
       if (res.ok) {
         const persona = await res.json()
         setPersonas((prev) => [...prev, persona])
@@ -183,6 +189,7 @@ export function CoachSettingsContent({ profileName }: CoachSettingsContentProps)
           }),
         }
       )
+      checkAuthResponse(res)
       if (res.ok) {
         const file = await res.json()
         setContextFiles((prev) => [file, ...prev])
@@ -207,6 +214,7 @@ export function CoachSettingsContent({ profileName }: CoachSettingsContentProps)
         `${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/coach/files/${fileId}`,
         { method: 'DELETE', headers: getAuthHeaders() }
       )
+      checkAuthResponse(res)
       if (res.ok) setContextFiles((prev) => prev.filter((f) => f.id !== fileId))
     } catch {
       // ignore

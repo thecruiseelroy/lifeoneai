@@ -2647,27 +2647,19 @@ body {
   text-align: center;
 }
 
-.foods-detail-backdrop {
-  position: absolute;
+/* Food detail: centered modal (same pattern as workout/program modals) */
+.food-detail-modal-overlay {
+  position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 5;
+  z-index: 30;
 }
 
-.foods-detail-panel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: min(400px, 90vw);
-  background: var(--bg-elevated);
-  border-left: 1px solid var(--border);
-  z-index: 10;
-  overflow-y: auto;
+.food-detail-modal {
+  max-width: 440px;
 }
 
 .foods-detail-panel-inner {
-  padding: var(--space-xl);
+  padding: 0;
 }
 
 .foods-detail-panel-header {
@@ -5551,9 +5543,8 @@ body {
     max-width: 100%;
   }
 
-  .foods-detail-panel {
-    width: 100%;
-    max-width: 100%;
+  .food-detail-modal {
+    max-width: min(95vw, 440px);
   }
 
   .programs-panel {

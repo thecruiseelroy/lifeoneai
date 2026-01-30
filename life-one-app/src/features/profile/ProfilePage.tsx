@@ -4,7 +4,7 @@ import { FileUp } from 'lucide-react'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { getBreadcrumbItems } from '../../utils/breadcrumbRoutes'
 import { useProfile } from '../../context/ProfileContext'
-import { apiUploadProfileSheet, apiGetProfileSheet, getApiBase, getAuthHeaders } from '../../api/client'
+import { apiUploadProfileSheet, apiGetProfileSheet, getApiBase, getAuthHeaders, checkAuthResponse } from '../../api/client'
 import { CoachSettingsContent } from '../coach/CoachSettingsContent'
 
 const API_BASE = getApiBase()
@@ -64,6 +64,7 @@ export function ProfilePage() {
           body: JSON.stringify({ name: trimmed }),
         }
       )
+      checkAuthResponse(res)
       if (!res.ok) throw new Error(await res.text())
       setNameMessage('Name updated. It will appear after you log in again.')
     } catch (e) {

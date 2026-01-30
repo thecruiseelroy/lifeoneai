@@ -65,6 +65,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false))
   }, [])
 
+  useEffect(() => {
+    const on401 = () => {
+      setUser(null)
+      setTokenState(null)
+    }
+    window.addEventListener('life-one-401', on401)
+    return () => window.removeEventListener('life-one-401', on401)
+  }, [])
+
   const login = useCallback(async (name: string, password: string) => {
     const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',

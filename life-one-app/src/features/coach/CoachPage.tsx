@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Settings } from 'lucide-react'
 import { useProfile } from '../../context/ProfileContext'
-import { getApiBase, getAuthHeaders } from '../../api/client'
+import { getApiBase, getAuthHeaders, checkAuthResponse } from '../../api/client'
 
 const API_BASE = getApiBase()
 
@@ -40,6 +40,8 @@ export function CoachPage() {
         fetch(`${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/coach/settings`, { headers }),
         fetch(`${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/coach/personas`, { headers }),
       ])
+      checkAuthResponse(settingsRes)
+      checkAuthResponse(personasRes)
       if (settingsRes.ok && personasRes.ok) {
         const [settingsData, personasData] = await Promise.all([settingsRes.json(), personasRes.json()])
         const personaId = settingsData.coach_persona_id ?? null
@@ -66,6 +68,7 @@ export function CoachPage() {
         `${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/chat`,
         { headers: getAuthHeaders() }
       )
+      checkAuthResponse(res)
       if (!res.ok) {
         const text = await res.text()
         let msg = text
@@ -116,6 +119,7 @@ export function CoachPage() {
           body: JSON.stringify({ message: text }),
         }
       )
+      checkAuthResponse(res)
       if (!res.ok) {
         const textRes = await res.text()
         let msg = textRes

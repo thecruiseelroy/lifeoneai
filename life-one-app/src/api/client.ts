@@ -24,6 +24,14 @@ export function getAuthHeaders(): Record<string, string> {
   return { Authorization: `Bearer ${token}` }
 }
 
+/** Call after fetch(); clears auth and notifies app on 401 so user is sent back to login. */
+export function checkAuthResponse(res: Response): void {
+  if (res.status === 401 && authStore.getToken()) {
+    authStore.clearAuth()
+    window.dispatchEvent(new CustomEvent('life-one-401'))
+  }
+}
+
 async function request<T>(
   path: string,
   options: RequestInit & { params?: Record<string, string> } = {}
@@ -44,6 +52,10 @@ async function request<T>(
     ...init,
     headers,
   })
+  if (res.status === 401 && token) {
+    authStore.clearAuth()
+    window.dispatchEvent(new CustomEvent('life-one-401'))
+  }
   if (!res.ok) {
     const text = await res.text()
     let detail = text
@@ -110,6 +122,7 @@ export async function apiUploadProfileSheet(
     headers,
     body: form,
   })
+  checkAuthResponse(res)
   if (!res.ok) {
     const text = await res.text()
     let detail = text

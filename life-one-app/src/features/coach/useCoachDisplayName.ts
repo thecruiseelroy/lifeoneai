@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useProfile } from '../../context/ProfileContext'
-import { getApiBase, getAuthHeaders } from '../../api/client'
+import { getApiBase, getAuthHeaders, checkAuthResponse } from '../../api/client'
 
 const API_BASE = getApiBase()
 
@@ -16,6 +16,8 @@ export function useCoachDisplayName(): string {
         fetch(`${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/coach/settings`, { headers }),
         fetch(`${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/coach/personas`, { headers }),
       ])
+      checkAuthResponse(settingsRes)
+      checkAuthResponse(personasRes)
       if (settingsRes.ok && personasRes.ok) {
         const [settingsData, personasData] = await Promise.all([settingsRes.json(), personasRes.json()])
         const personaId = settingsData.coach_persona_id ?? null
