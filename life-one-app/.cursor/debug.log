@@ -8,3 +8,9 @@
 {"m":"finish","loc":"gitupdate.bat","h":"H4"}
 {"m":"start","loc":"gitupdate.bat","h":"H1"}
 {"m":"after_build","loc":"gitupdate.bat","h":"H2"}
+{"m":"before_commit_msg","loc":"gitupdate.bat","h":"H5"}
+{"m":"after_set_raw","loc":"gitupdate.bat","h":"H5"}
+{"m":"before_git_commit","loc":"gitupdate.bat","h":"H1"}
+{"m":"finish","loc":"gitupdate.bat","h":"H4"}
+{"m":"start","loc":"gitupdate.bat","h":"H1"}
+{"m":"after_build","loc":"gitupdate.bat","h":"H2"}
