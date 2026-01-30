@@ -38,8 +38,9 @@ try {
     secure: useSecure,
     ...(secureOptions && { secureOptions }),
   })
-  console.log('Uploading dist to', remoteDir, '...')
-  await client.uploadFromDir(localDir, remoteDir)
+  console.log('Uploading dist contents into', remoteDir, '...')
+  await client.ensureDir(remoteDir)
+  await client.uploadFromDir(localDir)
   console.log('Done. Site updated.')
 } catch (err) {
   console.error('Deploy failed:', err.message)
