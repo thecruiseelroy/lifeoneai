@@ -20,11 +20,15 @@ export function SettingsPage() {
   const loadSettings = useCallback(async () => {
     if (!profileName) return
     setError(null)
+    const url = `${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/settings/ai`
+    // #region agent log
+    fetch('http://127.0.0.1:7261/ingest/984f0a71-c4bc-4ea1-9635-399e837fff0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SettingsPage.tsx:loadSettings:beforeFetch',message:'GET settings/ai',data:{url,profileName,API_BASE},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1_H2_H5'})}).catch(()=>{});
+    // #endregion
     try {
-      const res = await fetch(
-        `${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/settings/ai`,
-        { headers: getAuthHeaders() }
-      )
+      const res = await fetch(url, { headers: getAuthHeaders() })
+      // #region agent log
+      fetch('http://127.0.0.1:7261/ingest/984f0a71-c4bc-4ea1-9635-399e837fff0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SettingsPage.tsx:loadSettings:afterFetch',message:'response',data:{status:res.status,ok:res.ok,statusText:res.statusText},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1_H2_H3'})}).catch(()=>{});
+      // #endregion
       if (!res.ok) throw new Error(await res.text())
       const data = await res.json()
       setOpenrouterModel(data.openrouter_model ?? 'openai/gpt-4o')
@@ -33,8 +37,12 @@ export function SettingsPage() {
       setHasApiKey(Boolean(data.has_api_key))
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to load settings'
+      const isReach = msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('network')
+      // #region agent log
+      fetch('http://127.0.0.1:7261/ingest/984f0a71-c4bc-4ea1-9635-399e837fff0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SettingsPage.tsx:loadSettings:catch',message:'loadSettings failed',data:{msg,isReach,showingCantReach:isReach},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1_H4_H5'})}).catch(()=>{});
+      // #endregion
       setError(
-        msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('network')
+        isReach
           ? `Can't reach the API at ${API_BASE}. Start the backend: run start.bat in life-one-api (port 8765).`
           : msg
       )
@@ -62,7 +70,7 @@ export function SettingsPage() {
       }
       if (openrouterApiKey.trim()) body.openrouter_api_key = openrouterApiKey.trim()
       // #region agent log
-      fetch('http://127.0.0.1:7259/ingest/f188c84d-66a1-4bae-9fce-9355d7ca9ed5',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SettingsPage.tsx:handleSave',message:'PUT ai settings',data:{profileName,bodyHasApiKey:'openrouter_api_key' in body,bodyKeys:Object.keys(body)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
+      fetch('http://127.0.0.1:7261/ingest/984f0a71-c4bc-4ea1-9635-399e837fff0b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SettingsPage.tsx:handleSave',message:'PUT ai settings',data:{profileName,bodyHasApiKey:'openrouter_api_key' in body,bodyKeys:Object.keys(body)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
       // #endregion
       const res = await fetch(
         `${API_BASE}/api/profiles/${encodeURIComponent(profileName)}/settings/ai`,
