@@ -28,12 +28,19 @@ except ImportError:
 def _hash_password(password: str) -> str:
     if not pwd_ctx:
         raise RuntimeError("passlib not installed; pip install passlib[bcrypt]")
+    # bcrypt truncates at 72 bytes; passlib/newer bcrypt can raise. Truncate to 72 bytes.
+    pwd_bytes = password.encode("utf-8")
+    if len(pwd_bytes) > 72:
+        password = pwd_bytes[:72].decode("utf-8", errors="ignore")
     return pwd_ctx.hash(password)
 
 
 def _verify_password(plain: str, hashed: str) -> bool:
     if not pwd_ctx:
         return False
+    pwd_bytes = plain.encode("utf-8")
+    if len(pwd_bytes) > 72:
+        plain = pwd_bytes[:72].decode("utf-8", errors="ignore")
     return pwd_ctx.verify(plain, hashed)
 
 
