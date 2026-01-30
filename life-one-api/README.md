@@ -66,6 +66,22 @@ CORS_ORIGINS=https://lifeoneai.com,https://www.lifeoneai.com
 SQLite file: `life_one.db` in the API directory (override with env `LIFE_ONE_DB`).  
 Schema is applied on startup from `schema/*.sql`.
 
+### Persisting the database on Render
+
+**Render free tier uses an ephemeral filesystem:** the DB file is wiped on redeploy or when the service restarts. So accounts and data disappear after a restart. The backend is saving profiles correctly; the host is not persisting them.
+
+To keep profiles and data:
+
+1. **Paid instance + persistent disk (recommended for SQLite)**  
+   In the Render dashboard: add a **Disk** to your web service, set a mount path (e.g. `/data`). Then set an env var:  
+   `LIFE_ONE_DB=/data/life_one.db`  
+   so the DB lives on the persistent disk and survives redeploys.
+
+2. **Or use a managed database**  
+   Use Render Postgres (or another hosted DB) and switch the app to that backend (requires code changes to use Postgres instead of SQLite).
+
+Until you add a persistent disk or external DB, users will need to **Register** again after each deploy or restart if login says "Invalid name or password" or "Profile not found".
+
 ## Endpoints
 
 - **Profiles**: `GET/POST /api/profiles`, `GET /api/profiles/{name}`

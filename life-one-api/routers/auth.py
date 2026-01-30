@@ -125,7 +125,10 @@ def login(body: dict):
             (name,),
         ).fetchone()
         if not row:
-            raise HTTPException(status_code=401, detail="Invalid name or password")
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid name or password. If you registered on this site before, the server database may have been reset (common on free hosting). Try Register to create a new account.",
+            )
         password_hash = row["password_hash"]
         if not password_hash:
             raise HTTPException(status_code=401, detail="Profile has no password set")
@@ -159,7 +162,10 @@ def require_profile_match(
             "SELECT id FROM profiles WHERE id = ?", (profile_id,)
         ).fetchone()
         if not row:
-            raise HTTPException(status_code=404, detail="Profile not found")
+            raise HTTPException(
+                status_code=404,
+                detail="Profile not found. The server database may have been reset. Log out and log in again, or Register to create a new account.",
+            )
         return row["id"]
     finally:
         conn.close()
