@@ -30,10 +30,8 @@ All of these come from your Hostinger control panel (hPanel).
    - Note the **username** and **password** you set or see.
 
 4. **Get the FTP host**  
-   - In the same FTP section you often see **FTP host** or **Server**.  
-   - It might look like:
-     - `ftp.yourdomain.com` (replace with your actual domain, e.g. `ftp.lifeoneai.com`), or  
-     - A hostname like `something.hostingersite.com` or an IP.  
+   - In the same FTP section you often see **Active hostname** (e.g. `ftp.lifeoneai.com`).  
+   - **Use the hostname, not the IP.** The TLS certificate is for the hostname; using the raw IP causes "Hostname/IP does not match certificate's altnames".  
    - Use exactly what Hostinger shows (no `ftp://` prefix, no trailing slash).
 
 5. **Remote folder**  
